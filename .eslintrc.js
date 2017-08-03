@@ -10,6 +10,11 @@ module.exports = {
     ],
     "extends": "standard",
     "rules": {
-       
+       "no-undef": "off",
+       "arrow-body-style": "off",
+       "no-unused-vars": "off",
+       "semi": "off",
+       "eqeqeq": "off",
+       "indent": ["error", 4]
     }
 }

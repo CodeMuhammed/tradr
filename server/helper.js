@@ -1,3 +1,5 @@
+const request = require('request');
+
 // This function calculates the highest and lowest prices from the dataset
 let calculatePriceMinMax = (dataset) => {
     let result = {
@@ -51,7 +53,22 @@ let getCandle = (dataset) => {
     };
 }
 
+// This returns the current time from the market
+let currentTimestamp = (cb) => {
+    request('https://www.bitstamp.net/api/ticker/', function (error, response, data) {
+        if (error) {
+            throw new Error('Cannot retrieve current time from exchange');
+        } else {
+            if (response && response.statusCode === 200) {
+                data = JSON.parse(data);
+                let timestamp = parseInt(data.timestamp);
+                cb(timestamp);
+            }
+        }
+    });
+}
 module.exports = {
     getCandle,
-    getMovingAverage
+    getMovingAverage,
+    currentTimestamp
 };

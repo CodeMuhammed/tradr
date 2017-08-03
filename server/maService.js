@@ -1,4 +1,3 @@
-const request = require('request');
 const EventEmitter = require('events').EventEmitter;
 const moduleEvents = new EventEmitter;
 const Candlestick = require('./models/candlestick');
@@ -17,23 +16,15 @@ let candleData = [];
 let lastCandleTimeStamp = '';
 
 // Get current ticker timestamp from bitstamp, then backdate it 48hours
-request('https://www.bitstamp.net/api/ticker/', function (error, response, data) {
-    if (error) {
-        console.log('An error occured trying to retrieve data');
-    } else {
-        if (response && response.statusCode === 200) {
-            data = JSON.parse(data);
-            let timestamp = parseInt(data.timestamp) - (48 * 3600);
+helper.currentTimestamp((timestamp) => {
+    timestamp = timestamp - (48 * 3600);
 
-            getCandles(timestamp, (docs) => {
-                let sampleCandles = groupCandles(docs);
-                mapMovingAverages(sampleCandles);
-                candleData = sampleCandles;
-                runCron();
-                // @TODO delete candles that are older than one week
-            })
-        }
-    }
+    getCandles(timestamp, (docs) => {
+        let sampleCandles = groupCandles(docs);
+        mapMovingAverages(sampleCandles);
+        candleData = sampleCandles;
+        runCron();
+    })
 });
 
 // This function deles candles from the database older than the given timestamp
@@ -59,7 +50,7 @@ function getCandles (timestamp, cb) {
 
 // This function group the candles into 30mins candles
 function groupCandles (dataset) {
-    console.log('about to group candles', dataset.length);
+    console.log(`grouping ${dataset.length} candles`);
     let result = [];
     // group candles into ${CHUNKSIZE} mins sticks
     for (let i = 0; i < dataset.length;) {
