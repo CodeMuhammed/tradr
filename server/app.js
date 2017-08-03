@@ -1,12 +1,29 @@
 // import ticker model
 const Candlestick = require('./models/candlestick');
+const helper = require('./helper');
 
 const run = () => {
-    require('./tickerService')();
-    let MAService = require('./maService');
+    helper.currentTimestamp((timestamp) => {
+        let days = 30 * 24 * 3600;
+        timestamp = timestamp - days;
 
-    MAService.on('cross', (message) => {
-        console.log(message);
+        // delete all data older than 30days
+        Candlestick.remove({
+            timestamp: { $lte: timestamp }
+        }, (err, stats) => {
+            if (err) {
+                throw new Error('Cannot truncate dataset');
+            } else {
+                require('./tickerService')();
+
+                // @TODO create a watcher module instead
+                let MAService = require('./maService')(20, 10, 10);
+
+                MAService.on('cross', (message) => {
+                    console.log(message);
+                });
+            }
+        });
     });
 }
 
