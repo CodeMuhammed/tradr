@@ -1,0 +1,2 @@
+# tradr
+Stock monitoring service
