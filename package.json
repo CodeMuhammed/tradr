@@ -13,6 +13,7 @@
   "author": "Muhammed Ali",
   "license": "ISC",
   "dependencies": {
+    "babel-eslint": "^7.2.3",
     "dotenv": "^4.0.0",
     "eslint-config-standard": "^10.2.1",
     "mongoose": "^4.11.5",

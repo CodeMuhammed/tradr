@@ -5,16 +5,16 @@ let calculatePriceMinMax = (dataset) => {
         maxPrice: dataset[0].price_str || '0.00'
     };
 
-    if(dataset.length > 0) {
+    if (dataset.length > 0) {
         dataset.forEach((data) => {
-            if(parseFloat(data.price_str) < parseFloat(result.minPrice)) {
+            if (parseFloat(data.price_str) < parseFloat(result.minPrice)) {
                 result.minPrice = data.price_str
-            } else if(parseFloat(data.price_str) > parseFloat(result.minPrice)) {
+            } else if (parseFloat(data.price_str) > parseFloat(result.minPrice)) {
                 result.maxPrice = data.price_str
             }
         });
     }
-    
+
     return result;
 }
 
@@ -50,7 +50,6 @@ let getCandle = (dataset) => {
         price_str: dataset[dataset.length - 1].price_str
     };
 }
-
 
 module.exports = {
     getCandle,

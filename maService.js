@@ -31,10 +31,16 @@ request('https://www.bitstamp.net/api/ticker/', function (error, response, data)
                 mapMovingAverages(sampleCandles);
                 candleData = sampleCandles;
                 runCron();
+                // @TODO delete candles that are older than one week
             })
         }
     }
 });
+
+// This function deles candles from the database older than the given timestamp
+function deleteCandlesBeforeTimeStamp(timestamp) {
+    // @TODO
+}
 
 // This function hits the database and returns the candle sticks
 function getCandles(timestamp, cb) {
@@ -87,6 +93,7 @@ function mapMovingAverages(sampleCandles) {
 function runCron() {
     console.log(candleData);
     setTimeout(() => {
+        console.log('process new candles');
         getCandles(lastCandleTimeStamp, (docs) => {
             let sampleCandles  = groupCandles(docs);
             mapMovingAverages(sampleCandles);

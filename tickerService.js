@@ -19,20 +19,18 @@ module.exports = () => {
     // calculate the low high open, close, volume then reset the dataset
     // At 1 min intervals
     setInterval(() => {
-        if(latestDataset.length > 0) {
-            let candleStick  = helper.getCandle(latestDataset);
+        if (latestDataset.length > 0) {
+            let candleStick = helper.getCandle(latestDataset);
 
             // save data to the database
             Candlestick.create(candleStick, (err, info) => {
                 if (err) {
                     console.log('Could not create candle');
                 } else {
-                    console.log('Candle created successfully');
                     // update moving average calculator with recent data
                 }
             });
         }
-        
         latestDataset = [];
     }, (1000 * 60));
 };
