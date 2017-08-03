@@ -1,0 +1,25 @@
+{
+  "name": "tradr",
+  "version": "1.0.0",
+  "description": "A financial trading tool",
+  "main": "test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "stock",
+    "analytics"
+  ],
+  "author": "Muhammed Ali",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "mongoose": "^4.11.5",
+    "nodemailer": "^4.0.1",
+    "nodemailer-mailgun-transport": "^1.3.5",
+    "pusher": "^1.5.1",
+    "pusher-client": "^1.1.0",
+    "request": "^2.81.0",
+    "technicalindicators": "^1.0.17"
+  }
+}
