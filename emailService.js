@@ -5,7 +5,7 @@ const mg = require('nodemailer-mailgun-transport');
 const auth = {
   auth: {
     api_key: process.env.mailgun_api_key,
-    domain: 'mg.automaticpallet.com'
+    domain: 'palingram.com'
   }
 }
 
@@ -35,7 +35,3 @@ let sendEmail = (htmlData, email, subject, cb) => {
 module.exports = {
     sendEmail
 };
-
-sendEmail('<b>hey</b>', 'codemuhammed@gmail.com', 'e', (e,r) => {
-    console.log(e || r);
-})

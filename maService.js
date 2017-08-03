@@ -4,9 +4,8 @@ const moduleEvents = new EventEmitter;
 const Candlestick = require('./models/candlestick');
 const helper = require('./helper');
 const MA = require('./indicators').MA;
+const mailer = require('./emailService');
 
-let candleData = [];
-let lastCandleTimeStamp = '';
 const MA_PERIODS = {
     long: 20,
     short: 10
@@ -14,6 +13,9 @@ const MA_PERIODS = {
 const shortMA = new MA(MA_PERIODS.short);
 const longMA = new MA(MA_PERIODS.long);
 const CHUNKSIZE = 10;
+
+let candleData = [];
+let lastCandleTimeStamp = '';
 
 // Get current ticker timestamp from bitstamp, then backdate it 48hours
 request('https://www.bitstamp.net/api/ticker/', function (error, response, data) {
@@ -36,7 +38,7 @@ request('https://www.bitstamp.net/api/ticker/', function (error, response, data)
 
 // This function hits the database and returns the candle sticks
 function getCandles(timestamp, cb) {
-    Candlestick.find({timestamp: { $gte: timestamp }}, (err, docs) => {
+    Candlestick.find({timestamp: { $gt: timestamp }}, (err, docs) => {
         if (err) {
             throw new Error('Could not initialize moving average service');
         } else {
@@ -83,13 +85,36 @@ function mapMovingAverages(sampleCandles) {
 
 // This cron job calculates the latest moving average every 30mins
 function runCron() {
+    console.log(candleData);
     setTimeout(() => {
         getCandles(lastCandleTimeStamp, (docs) => {
             let sampleCandles  = groupCandles(docs);
             mapMovingAverages(sampleCandles);
             candleData = candleData.concat(sampleCandles);
+            
+            // check if the recently added candles have an intersection
+            let message;
+            for(let i = 0; i < sampleCandles.length; i++) {
+                if(sampleCandles[i].longMA > sampleCandles[i].shortMA) {
+                    message = 'Sell your position now prices are falling';
+                } else if(sampleCandles[i].longMA < sampleCandles[i].shortMA) {
+                    message = 'buy your position now prices are rising';
+                }
+            }
 
-            console.log(candleData.length);
+            if(message) {
+                mailer.sendEmail(
+                    `
+                     <b>${message}</b> <br />
+                     <b>Current BTC price : ${sampleCandles[sampleCandles.length -1 ].close}</b> 
+                    `,
+                    'codemuhammed@gmail.com',
+                    'Tradr Alert',
+                    (err, info) => {
+                        console.log(err || info);
+                    }
+                );
+            }
         })
     }, (10 * 60 * 1000));
 }
