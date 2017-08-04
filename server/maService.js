@@ -53,6 +53,8 @@ module.exports = (long, short, timeInterval) => {
 
         if (prevCandle.trend !== lastCandle.trend) {
             console.log('There is a reversal here');
+            console.log(prevCandle);
+            console.log(lastCandle);
         } else {
             console.log('Markets still trending ', lastCandle.trend);
         }
