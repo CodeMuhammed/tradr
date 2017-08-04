@@ -32,10 +32,29 @@ module.exports = (long, short, timeInterval) => {
             sampleCandles = sampleCandles.map((candle) => {
                 candle.shortMA = shortMA.getNextAverage(parseFloat(candle.close));
                 candle.longMA = longMA.getNextAverage(parseFloat(candle.close));
+
+                if (candle.longMA > candle.shortMA) {
+                    candle.trend = 'up';
+                } else {
+                    candle.trend = 'down';
+                }
+
                 return candle;
             });
         } else {
             console.log('not enough data to calculate moving averages');
+        }
+    }
+
+    // This function detects trend reversal
+    function checkForTrendReversal () {
+        let prevCandle = candleData[candleData.length - 2];
+        let lastCandle = candleData[candleData.length - 1];
+
+        if (prevCandle.trend !== lastCandle.trend) {
+            console.log('There is a reversal here');
+        } else {
+            console.log('Markets still trending ', lastCandle.trend);
         }
     }
 
@@ -50,26 +69,7 @@ module.exports = (long, short, timeInterval) => {
 
                 mapMovingAverages(sampleCandles);
                 candleData = candleData.concat(sampleCandles);
-
-                // check if the recently added candles have an intersection
-                let message;
-                for (let i = 0; i < sampleCandles.length; i++) {
-                    if (sampleCandles[i].longMA > sampleCandles[i].shortMA) {
-                        message = 'Sell';
-                    } else if (sampleCandles[i].longMA < sampleCandles[i].shortMA) {
-                        message = 'Buy';
-                    }
-                }
-
-                if (message) {
-                    moduleEvents.emit('cross', {
-                        message: message,
-                        price: sampleCandles[sampleCandles.length - 1].close
-                    });
-                }
-
-                console.log('Candle stats');
-                console.log(sampleCandles[sampleCandles.length - 1]);
+                checkForTrendReversal();
             })
         }, (CHUNKSIZE * 60 * 1000));
     }
