@@ -1,4 +1,4 @@
-// import ticker model
+require('./cron');
 const Candlestick = require('./models/candlestick');
 const helper = require('./helper');
 

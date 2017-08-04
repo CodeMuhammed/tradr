@@ -9,6 +9,7 @@ const initialState = {
     isDecrementing: false
 }
 
+// Reducers
 export default (state = initialState, action) => {
     switch (action.type) {
     case INCREMENT_REQUESTED:
@@ -42,6 +43,7 @@ export default (state = initialState, action) => {
     }
 }
 
+// Actions
 export const increment = () => {
     return dispatch => {
         dispatch({
