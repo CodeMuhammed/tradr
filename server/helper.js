@@ -64,16 +64,19 @@ let currentTimestamp = (cb) => {
     });
 }
 
-// This function group the candles into 30mins candles
+// This function group the candles into ${size}mins candles
 let groupCandles = (dataset, size) => {
     console.log(`grouping ${dataset.length} candles`);
     let result = [];
-    // group candles into ${size} mins sticks
-    for (let i = 0; i < dataset.length;) {
-        let group = dataset.slice(i, i + size);
-        let candle = getCandle(group);
-        result.push(candle);
-        i += size;
+
+    if (size <= dataset.length) {
+        // group candles into ${size} mins sticks
+        for (let i = 0; i < dataset.length;) {
+            let group = dataset.slice(i, i + size);
+            let candle = getCandle(group);
+            result.push(candle);
+            i += size;
+        }
     }
 
     return result;
@@ -90,6 +93,8 @@ let getCandles = (timestamp, size, cb) => {
             docs = docs.splice(0, docs.length - extraCandles);
             if (docs.length > 0) {
                 cb(docs);
+            } else {
+                cb();
             }
         }
     });

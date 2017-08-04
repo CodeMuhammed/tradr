@@ -16,12 +16,16 @@ module.exports = (long, short, timeInterval) => {
         timestamp = timestamp - (48 * 3600);
 
         helper.getCandles(timestamp, CHUNKSIZE, (docs) => {
-            let sampleCandles = helper.groupCandles(docs, CHUNKSIZE);
-            lastCandleTimeStamp = docs[docs.length - 1].timestamp;
+            if (docs) {
+                let sampleCandles = helper.groupCandles(docs, CHUNKSIZE);
+                lastCandleTimeStamp = docs[docs.length - 1].timestamp;
 
-            mapMovingAverages(sampleCandles);
-            candleData = sampleCandles;
-            runCron();
+                mapMovingAverages(sampleCandles);
+                candleData = sampleCandles;
+                runCron();
+            } else {
+                console.log('No dataset collected so far');
+            }
         })
     });
 
@@ -62,16 +66,21 @@ module.exports = (long, short, timeInterval) => {
 
     // This cron job calculates the latest moving average every ${CHUNKSIZE} mins
     function runCron () {
-        console.log(candleData.length + ' candles grouped');
+        console.log(`Waiting for ${CHUNKSIZE} mins`);
         setTimeout(() => {
-            console.log('process new candles');
             helper.getCandles(lastCandleTimeStamp, CHUNKSIZE, (docs) => {
-                let sampleCandles = helper.groupCandles(docs, CHUNKSIZE);
-                lastCandleTimeStamp = docs[docs.length - 1].timestamp;
+                if (docs) {
+                    console.log(`process ${docs.length} new candles`);
+                    let sampleCandles = helper.groupCandles(docs, CHUNKSIZE);
+                    lastCandleTimeStamp = docs[docs.length - 1].timestamp;
 
-                mapMovingAverages(sampleCandles);
-                candleData = candleData.concat(sampleCandles);
-                checkForTrendReversal();
+                    mapMovingAverages(sampleCandles);
+                    candleData = candleData.concat(sampleCandles);
+                    checkForTrendReversal();
+                    return runCron();
+                } else {
+                    console.log('Not enough candles to recalculate');
+                }
             })
         }, (CHUNKSIZE * 60 * 1000));
     }

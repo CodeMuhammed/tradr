@@ -17,7 +17,7 @@ const run = () => {
                 require('./tickerService')();
 
                 // @TODO create a watcher module instead
-                let MAService = require('./maService')(20, 10, 10);
+                let MAService = require('./maService')(20, 10, 15);
 
                 MAService.on('cross', (message) => {
                     console.log(message);
