@@ -1,4 +1,5 @@
 const request = require('request');
+const Candlestick = require('./models/candlestick');
 
 // This function calculates the highest and lowest prices from the dataset
 let calculatePriceMinMax = (dataset) => {
@@ -29,11 +30,6 @@ let getVolumeTraded = (dataset) => {
     });
 
     return result;
-}
-
-// This function calculates the moving average from the dataset
-let getMovingAverage = (dataset) => {
-    return 0.00;
 }
 
 // This calculates the candle values from the dataset
@@ -67,8 +63,41 @@ let currentTimestamp = (cb) => {
         }
     });
 }
+
+// This function group the candles into 30mins candles
+let groupCandles = (dataset, size) => {
+    console.log(`grouping ${dataset.length} candles`);
+    let result = [];
+    // group candles into ${size} mins sticks
+    for (let i = 0; i < dataset.length;) {
+        let group = dataset.slice(i, i + size);
+        let candle = getCandle(group);
+        result.push(candle);
+        i += size;
+    }
+
+    return result;
+}
+
+// This function hits the database and returns the candle sticks
+let getCandles = (timestamp, size, cb) => {
+    Candlestick.find({timestamp: { $gt: timestamp }}, (err, docs) => {
+        if (err) {
+            throw new Error('Could not initialize moving average service');
+        } else {
+            // truncate the last portion that are not up to 30 candles
+            let extraCandles = docs.length % size;
+            docs = docs.splice(0, docs.length - extraCandles);
+            if (docs.length > 0) {
+                cb(docs);
+            }
+        }
+    });
+}
+
 module.exports = {
     getCandle,
-    getMovingAverage,
-    currentTimestamp
+    currentTimestamp,
+    groupCandles,
+    getCandles
 };
