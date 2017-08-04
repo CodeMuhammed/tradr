@@ -24,7 +24,7 @@ setInterval(() => {
 
 // @TODO get all the data and crunch for intersections
 // database url read from the environment variables
-/* const dbUrl = process.env.db_url_dev || process.env.db_url_prod;
+const dbUrl = process.env.db_url_dev || process.env.db_url_prod;
 
 // connect to mongoose here
 mongoose
@@ -71,10 +71,10 @@ mongoose
 function analyzeCrosses (candles) {
     candles.forEach((candle) => {
         if (candle.longMA > candle.shortMA) {
-            console.log('uptrend cross at ', candle.close, new Date(candle.timestamp * 1000));
+            console.log('Downtrend ', candle.close, new Date(candle.timestamp * 1000));
         } else if (candle.longMA < candle.shortMA) {
-            console.log('downtrend cross at ', candle.close, new Date(candle.timestamp * 1000));
+            console.log('Uptrend ', candle.close, new Date(candle.timestamp * 1000));
         }
     });
 }
-*/
+

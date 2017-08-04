@@ -81,7 +81,6 @@ let groupCandles = (dataset, size) => {
 
 // This function hits the database and returns the candle sticks
 let getCandles = (timestamp, size, cb) => {
-    console.log('Here');
     Candlestick.find({timestamp: { $gt: timestamp }}, (err, docs) => {
         if (err) {
             throw new Error('Could not initialize moving average service');

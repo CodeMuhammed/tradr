@@ -34,9 +34,9 @@ module.exports = (long, short, timeInterval) => {
                 candle.longMA = longMA.getNextAverage(parseFloat(candle.close));
 
                 if (candle.longMA > candle.shortMA) {
-                    candle.trend = 'up';
-                } else {
                     candle.trend = 'down';
+                } else {
+                    candle.trend = 'up';
                 }
 
                 return candle;
@@ -56,7 +56,7 @@ module.exports = (long, short, timeInterval) => {
             console.log(prevCandle);
             console.log(lastCandle);
         } else {
-            console.log('Markets still trending ', lastCandle.trend);
+            console.log('Markets still trending', lastCandle.trend);
         }
     }
 

@@ -28,7 +28,7 @@ module.exports = () => {
                     console.log('Could not create candle');
                 } else {
                     // update moving average calculator with recent data
-                    console.log('Candle created');
+                    // console.log('Candle created');
                 }
             });
         }

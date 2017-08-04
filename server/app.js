@@ -4,7 +4,7 @@ const helper = require('./helper');
 
 const run = () => {
     helper.currentTimestamp((timestamp) => {
-        let days = 30 * 24 * 3600;
+        let days = 3 * 24 * 3600;
         timestamp = timestamp - days;
 
         // delete all data older than 30days
