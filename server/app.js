@@ -14,7 +14,6 @@ const run = () => {
             if (err) {
                 throw new Error('Cannot truncate dataset');
             } else {
-                console.log(stats);
                 require('./tickerService')();
 
                 // @TODO create a watcher module instead

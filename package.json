@@ -4,7 +4,7 @@
   "description": "A financial trading tool",
   "main": "test.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "keywords": [
     "stock",

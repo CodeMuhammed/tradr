@@ -25,9 +25,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // routes
-app.use('/', (req, res) => {
-    res.status(200).send({msg: 'ok :)'});
-});
+app.use('/', express.static('client/build'));
 
 module.exports = {
     start: (cb) => {
