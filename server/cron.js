@@ -24,7 +24,7 @@ setInterval(() => {
 
 // @TODO get all the data and crunch for intersections
 // database url read from the environment variables
-/* const dbUrl = process.env.db_url_dev || process.env.db_url_prod;
+const dbUrl = process.env.db_url_dev || process.env.db_url_prod;
 
 // connect to mongoose here
 mongoose
@@ -77,4 +77,4 @@ function analyzeCrosses (candles) {
             console.log('Uptrend ', candle.close, new Date(candle.timestamp * 1000));
         }
     });
-}*/
+}

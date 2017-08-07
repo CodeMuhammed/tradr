@@ -1,48 +1,51 @@
-import React from 'react'
-import { push } from 'react-router-redux'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import {
-  increment,
-  incrementAsync,
-  decrement,
-  decrementAsync
-} from '../../modules/counter'
+import React, { Component } from 'react';
+import axios from 'axios';
+import App from '../app';
 
-const Home = props => (
-  <div>
-    <h1>Home</h1>
-    <p>Count: {props.count}</p>
+class Home extends Component {
+    constructor (props) {
+        super(props);
+        this.state = {
+            data: [],
+            isLoading: true
+        };
+    }
 
-    <p>
-      <button onClick={props.increment} disabled={props.isIncrementing}>Increment</button>
-      <button onClick={props.incrementAsync} disabled={props.isIncrementing}>Increment Async</button>
-    </p>
+    componentDidMount () {
+        axios.get('http://stocktradr.herokuapp.com', {
+            headers: {
+                'Access-Control-Allow-Origin': '*'
+            }
+        })
+        .then((response) => {
+            if (response.statusText === 'OK') {
+                console.log(response.data);
+                this.setState({
+                    data: response.data,
+                    isLoading: false
+                });
+            }
+        })
+        .catch(() => {
+            console.log('Cannot load datasets');
+        });
+    }
 
-    <p>
-      <button onClick={props.decrement} disabled={props.isDecrementing}>Decrementing</button>
-      <button onClick={props.decrementAsync} disabled={props.isDecrementing}>Decrement Async</button>
-    </p>
+    renderApp () {
+        let result = <div>Loading...</div>;
+        if (!this.state.isLoading) {
+            result = <App data={this.state.data}/>
+        }
+        return result;
+    }
 
-    <p><button onClick={() => props.changePage()}>Go to about page via redux</button></p>
-  </div>
-)
+    render () {
+        return (
+            <div>
+                {this.renderApp()}
+            </div>
+        )
+    }
+}
 
-const mapStateToProps = state => ({
-    count: state.counter.count,
-    isIncrementing: state.counter.isIncrementing,
-    isDecrementing: state.counter.isDecrementing
-})
-
-const mapDispatchToProps = dispatch => bindActionCreators({
-    increment,
-    incrementAsync,
-    decrement,
-    decrementAsync,
-    changePage: () => push('/about-us')
-}, dispatch)
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Home)
+export default Home;
