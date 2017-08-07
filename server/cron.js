@@ -6,11 +6,11 @@ const MA = require('./indicators').MA;
 const helper = require('./helper');
 
 function ping () {
-    request('http://stocktradr.herokuapp.com/', function (error, response, data) {
+    request('http://stocktradr.herokuapp.com/ping', function (error, response, data) {
         if (error) {
             throw new Error('Cannot ping site');
         } else {
-            console.log(data);
+            console.log('Pinged');
         }
     });
 }
@@ -24,7 +24,7 @@ setInterval(() => {
 
 // @TODO get all the data and crunch for intersections
 // database url read from the environment variables
-const dbUrl = process.env.db_url_dev || process.env.db_url_prod;
+/* onst dbUrl = process.env.db_url_dev || process.env.db_url_prod;
 
 // connect to mongoose here
 mongoose
@@ -78,3 +78,4 @@ function analyzeCrosses (candles) {
         }
     });
 }
+*/

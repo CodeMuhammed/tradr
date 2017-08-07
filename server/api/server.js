@@ -26,6 +26,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // routes
 app.use('/', express.static('client/build'));
+app.use('/ping', (req, res) => {
+    res.status(200).send({msg: 'yes'});
+})
 
 module.exports = {
     start: (cb) => {
