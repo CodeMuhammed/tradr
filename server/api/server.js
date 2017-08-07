@@ -5,7 +5,7 @@ const cors = require('cors');
 const logger = require('morgan');
 const methodOverride = require('method-override');
 const path = require('path');
-
+const Candlestick = require('../models/candlestick');
 const app = express();
 const port = parseInt(process.env.PORT, 10) || 8001;
 
@@ -28,7 +28,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', express.static('client/build'));
 app.use('/ping', (req, res) => {
     res.status(200).send({msg: 'yes'});
-})
+});
+app.use('/data', (req, res) => {
+    Candlestick.find({}, (err, docs) => {
+        if (err) {
+            res.status(500).send({msg: err});
+        } else {
+            res.status(200).send({msg: docs});
+        }
+    });
+});
 
 module.exports = {
     start: (cb) => {

@@ -12,16 +12,19 @@ class Home extends Component {
     }
 
     componentDidMount () {
-        axios.get('http://stocktradr.herokuapp.com', {
+        let url = this.getDataUrl();
+        console.log(url);
+        axios.get(url, {
             headers: {
                 'Access-Control-Allow-Origin': '*'
             }
         })
         .then((response) => {
             if (response.statusText === 'OK') {
-                console.log(response.data);
+                console.log('Here');
+                let data = this.formatData(response.data);
                 this.setState({
-                    data: response.data,
+                    data: data,
                     isLoading: false
                 });
             }
@@ -29,6 +32,32 @@ class Home extends Component {
         .catch(() => {
             console.log('Cannot load datasets');
         });
+    }
+
+    formatData (data) {
+        data.map(() => {
+            return {
+                high: data.high,
+                low: data.low,
+                open: data.open,
+                close: data.close,
+                volume: data.volume,
+                date: this.formatDate(data.timestamp)
+            };
+        });
+
+        return data;
+    }
+
+    formatDate (timestamp) {
+        console.log(new Date(timestamp));
+    }
+
+    getDataUrl () {
+        if (window.location.href.indexOf('localhost')) {
+            return 'http://localhost:8001/data';
+        }
+        return 'http://stocktradr.herokuapp.com/data';
     }
 
     renderApp () {
