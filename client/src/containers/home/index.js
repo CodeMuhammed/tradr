@@ -21,36 +21,35 @@ class Home extends Component {
         })
         .then((response) => {
             if (response.statusText === 'OK') {
-                console.log('Here');
-                let data = this.formatData(response.data);
+                let data = this.formatData(response.data.msg);
+                console.log(data);
                 this.setState({
                     data: data,
                     isLoading: false
                 });
             }
         })
-        .catch(() => {
-            console.log('Cannot load datasets');
+        .catch((e) => {
+            console.log(e);
         });
     }
 
     formatData (data) {
-        data.map(() => {
+        return data.map((item) => {
             return {
-                high: data.high,
-                low: data.low,
-                open: data.open,
-                close: data.close,
-                volume: data.volume,
-                date: this.formatDate(data.timestamp)
+                high: item.high,
+                low: item.low,
+                open: item.open,
+                close: item.close,
+                volume: item.volume,
+                date: this.formatDate(item.timestamp)
             };
         });
-
-        return data;
     }
 
     formatDate (timestamp) {
-        console.log(new Date(timestamp));
+        timestamp = timestamp * 1000;
+        return new Date(timestamp);
     }
 
     getDataUrl () {
