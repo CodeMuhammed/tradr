@@ -54,7 +54,7 @@ class Home extends Component {
     }
 
     getDataUrl () {
-        if (window.location.href.indexOf('localhost')) {
+        if (window.location.href.indexOf('localhost') >= 0) {
             return 'http://localhost:8001/data';
         }
         return 'http://stocktradr.herokuapp.com/data';
