@@ -1,8 +1,8 @@
-require('./cron');
 const Candlestick = require('./models/candlestick');
 const helper = require('./helper');
 
 const run = () => {
+    require('./cron');
     helper.currentTimestamp((timestamp) => {
         let days = 3 * 24 * 3600;
         timestamp = timestamp - days;

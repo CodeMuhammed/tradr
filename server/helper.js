@@ -53,6 +53,7 @@ let getCandle = (dataset) => {
 let currentTimestamp = (cb) => {
     request('https://www.bitstamp.net/api/ticker/', function (error, response, data) {
         if (error) {
+            console.log(error);
             throw new Error('Cannot retrieve current time from exchange');
         } else {
             if (response && response.statusCode === 200) {
