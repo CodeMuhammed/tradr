@@ -24,7 +24,7 @@ setInterval(() => {
 
 // @TODO get all the data and crunch for intersections
 // database url read from the environment variables
-/* onst dbUrl = process.env.db_url_dev || process.env.db_url_prod;
+const dbUrl = process.env.db_url_dev || process.env.db_url_prod;
 
 // connect to mongoose here
 mongoose
@@ -78,4 +78,3 @@ function analyzeCrosses (candles) {
         }
     });
 }
-*/

@@ -7,6 +7,7 @@ const server = require('./server/api/server');
 
 // database url read from the environment variables
 const dbUrl = process.env.db_url_dev || process.env.db_url_prod;
+console.log(dbUrl);
 
 // connect to mongoose here
 mongoose

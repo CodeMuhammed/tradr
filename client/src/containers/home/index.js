@@ -13,7 +13,6 @@ class Home extends Component {
 
     componentDidMount () {
         let url = this.getDataUrl();
-        console.log(url);
         axios.get(url, {
             headers: {
                 'Access-Control-Allow-Origin': '*'
@@ -21,8 +20,8 @@ class Home extends Component {
         })
         .then((response) => {
             if (response.statusText === 'OK') {
-                let data = this.formatData(response.data.msg);
-                console.log(data);
+                let data = this.formatData(response.data.msg).slice(0, 300);
+
                 this.setState({
                     data: data,
                     isLoading: false

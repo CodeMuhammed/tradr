@@ -5,8 +5,11 @@
   "dependencies": {
     "axios": "^0.16.2",
     "bootstrap": "^3.3.7",
+    "canvasjs": "^1.8.1",
+    "highcharts": "^5.0.14",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
+    "react-google-charts": "^1.5.5",
     "react-redux": "^5.0.5",
     "react-router-dom": "^4.1.2",
     "react-router-redux": "^5.0.0-alpha.6",

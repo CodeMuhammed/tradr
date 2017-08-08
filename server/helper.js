@@ -85,8 +85,10 @@ let groupCandles = (dataset, size) => {
 
 // This function hits the database and returns the candle sticks
 let getCandles = (timestamp, size, cb) => {
+    console.log(timestamp, size, 'herer kldofgfjdj[k');
     Candlestick.find({timestamp: { $gt: timestamp }}, (err, docs) => {
         if (err) {
+            console.log(err);
             throw new Error('Could not initialize moving average service');
         } else {
             // truncate the last portion that are not up to 30 candles

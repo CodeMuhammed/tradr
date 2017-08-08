@@ -30,7 +30,7 @@ app.use('/ping', (req, res) => {
     res.status(200).send({msg: 'yes'});
 });
 app.use('/data', (req, res) => {
-    Candlestick.find({}, (err, docs) => {
+    Candlestick.find().sort({timestamp: 1}).find((err, docs) => {
         if (err) {
             res.status(500).send({msg: err});
         } else {
