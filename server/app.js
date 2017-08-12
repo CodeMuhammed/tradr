@@ -21,6 +21,7 @@ const run = () => {
 
                 MAService.on('cross', (message) => {
                     console.log(message);
+                    // @TODO call the trading service
                 });
             }
         });

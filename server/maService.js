@@ -56,9 +56,11 @@ module.exports = (long, short, timeInterval) => {
         let lastCandle = candleData[candleData.length - 1];
 
         if (prevCandle.trend !== lastCandle.trend) {
+            // @todo emit alert for sell or buy
             console.log('There is a reversal here');
             console.log(prevCandle);
             console.log(lastCandle);
+            moduleEvents.emit('cross', { msg: lastCandle.trend });
         } else {
             console.log('Markets still trending', lastCandle.trend);
         }

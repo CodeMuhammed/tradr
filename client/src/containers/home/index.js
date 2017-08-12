@@ -20,7 +20,7 @@ class Home extends Component {
         })
         .then((response) => {
             if (response.statusText === 'OK') {
-                let data = this.formatData(response.data.msg).slice(0, 300);
+                let data = this.formatData(response.data.msg);
 
                 this.setState({
                     data: data,

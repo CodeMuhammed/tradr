@@ -68,7 +68,6 @@ mongoose
     })
     .catch(err => console.error(err));
 
-
 function analyzeCrosses (candles) {
     candles.forEach((candle) => {
         if (candle.longMA > candle.shortMA) {

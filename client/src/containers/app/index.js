@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { TypeChooser } from 'react-stockcharts/lib/helper';
 import Chart from './chart';
 
-
 class App extends Component {
     render () {
         return (

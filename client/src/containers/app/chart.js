@@ -26,11 +26,9 @@ import { fitWidth } from 'react-stockcharts/lib/helper';
 import { last } from 'react-stockcharts/lib/utils';
 
 class CandleStickChartForDiscontinuousIntraDay extends React.Component {
-	render() {
+	render () {
 		const { type, data: initialData, width, ratio } = this.props;
-
-		const xScaleProvider = discontinuousTimeScaleProvider
-			.inputDateAccessor(d => d.date);
+		const xScaleProvider = discontinuousTimeScaleProvider.inputDateAccessor(d => d.date);
 		const {
 			data,
 			xScale,
@@ -57,7 +55,7 @@ class CandleStickChartForDiscontinuousIntraDay extends React.Component {
 				<Chart id={2}
 						yExtents={[d => d.volume]}
 						height={150} origin={(w, h) => [0, h - 150]}>
-					<YAxis axisAt='left' orient='left' ticks={5} tickFormat={format('.0s')}/>
+					<YAxis axisAt='left' orient='left' ticks={5} tickFormat={format('.0s')} />
 
 					<MouseCoordinateY
 						at='left'
