@@ -1,6 +1,6 @@
 const Pusher = require('pusher-client');
-const Candlestick = require('./models/candlestick');
-const helper = require('./helper');
+const Candlestick = require('../models/candlestick');
+const helper = require('../helper');
 
 const BITSTAMP_PUSHER_KEY = 'de504dc5763aeef9ff52';
 

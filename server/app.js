@@ -2,9 +2,8 @@ const Candlestick = require('./models/candlestick');
 const helper = require('./helper');
 
 const run = () => {
-    require('./cron');
     helper.currentTimestamp((timestamp) => {
-        let days = 3 * 24 * 3600;
+        let days = 30 * 24 * 3600;
         timestamp = timestamp - days;
 
         // delete all data older than 30days
@@ -14,12 +13,14 @@ const run = () => {
             if (err) {
                 throw new Error('Cannot truncate dataset');
             } else {
-                require('./tickerService')();
+                require('./services/tickerService')();
+                require('./services/cronjobService');
 
                 // @TODO create a watcher module instead
-                let MAService = require('./maService')(20, 10, 15);
+                let MAService = require('./services/maService')(20, 10, 15);
 
                 MAService.on('cross', (message) => {
+                    console.log('cross here');
                     console.log(message);
                 });
             }

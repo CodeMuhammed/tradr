@@ -4,26 +4,6 @@ const request = require('request');
 const mongoose = require('mongoose');
 const MA = require('./indicators').MA;
 const helper = require('./helper');
-
-function ping () {
-    request('http://stocktradr.herokuapp.com/ping', function (error, response, data) {
-        if (error) {
-            throw new Error('Cannot ping site');
-        } else {
-            console.log('Pinged');
-        }
-    });
-}
-
-ping();
-
-setInterval(() => {
-    ping();
-}, 10 * 60 * 1000);
-
-
-// @TODO get all the data and crunch for intersections
-// database url read from the environment variables
 const dbUrl = process.env.db_url_dev || process.env.db_url_prod;
 
 // connect to mongoose here
@@ -33,7 +13,7 @@ mongoose
         console.log('connected successfully to the database');
         const shortMA = new MA(10);
         const longMA = new MA(20);
-        const CHUNKSIZE = 15;
+        const CHUNKSIZE = 5;
 
         let lastCandleTimeStamp = '';
 

@@ -1,7 +1,7 @@
 const EventEmitter = require('events').EventEmitter;
 const moduleEvents = new EventEmitter;
-const helper = require('./helper');
-const MA = require('./indicators').MA;
+const helper = require('../helper');
+const MA = require('../indicators').MA;
 
 module.exports = (long, short, timeInterval) => {
     const shortMA = new MA(short);
@@ -13,7 +13,7 @@ module.exports = (long, short, timeInterval) => {
 
     // Get current ticker timestamp from bitstamp, then backdate it 48hours
     helper.currentTimestamp((timestamp) => {
-        timestamp = timestamp - (48 * 3600);
+        timestamp = timestamp - (30 * 24 * 3600);
 
         helper.getCandles(timestamp, CHUNKSIZE, (docs) => {
             if (docs) {
@@ -56,9 +56,7 @@ module.exports = (long, short, timeInterval) => {
         let lastCandle = candleData[candleData.length - 1];
 
         if (prevCandle.trend !== lastCandle.trend) {
-            console.log('There is a reversal here');
-            console.log(prevCandle);
-            console.log(lastCandle);
+            moduleEvents.emit('cross', lastCandle);
         } else {
             console.log('Markets still trending', lastCandle.trend);
         }

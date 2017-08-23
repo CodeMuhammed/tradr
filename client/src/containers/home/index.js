@@ -59,11 +59,10 @@ class Home extends Component {
     }
 
     renderApp () {
-        let result = <div>Loading...</div>;
         if (!this.state.isLoading) {
-            result = <App data={this.state.data}/>
+            return <App data={this.state.data}/>
         }
-        return result;
+        return <div>Loading...</div>;
     }
 
     render () {
