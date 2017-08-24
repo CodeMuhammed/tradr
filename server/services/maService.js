@@ -3,17 +3,18 @@ const moduleEvents = new EventEmitter;
 const helper = require('../helper');
 const MA = require('../indicators').MA;
 
-module.exports = (long, short, timeInterval) => {
-    const shortMA = new MA(short);
-    const longMA = new MA(long);
-    const CHUNKSIZE = timeInterval;
+module.exports = (settings) => {
+    const shortMA = new MA(settings.short);
+    const longMA = new MA(settings.long);
+    const CHUNKSIZE = settings.candle;
 
     let candleData = [];
     let lastCandleTimeStamp = '';
 
     // Get current ticker timestamp from bitstamp, then backdate it 48hours
     helper.currentTimestamp((timestamp) => {
-        timestamp = timestamp - (30 * 24 * 3600);
+        let thirtyDays = 30 * 24 * 3600;
+        timestamp = timestamp - thirtyDays;
 
         helper.getCandles(timestamp, CHUNKSIZE, (docs) => {
             if (docs) {

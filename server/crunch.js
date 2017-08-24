@@ -2,23 +2,24 @@ require('dotenv').config();
 
 const mongoose = require('mongoose');
 const MA = require('./indicators').MA;
+const MASettings = require('./settings').MA;
 const helper = require('./helper');
-const dbUrl = process.env.db_url_dev || process.env.db_url_prod;
+const trader = require('./trader');
 
+const dbUrl = process.env.db_url_dev || process.env.db_url_prod;
 // connect to mongoose here
 mongoose
     .connect(dbUrl, { useMongoClient: true })
     .then(() => {
         console.log('connected successfully to the database');
-        const shortMA = new MA(20);
-        const longMA = new MA(40);
-        const CHUNKSIZE = 5;
+        const shortMA = new MA(MASettings.short);
+        const longMA = new MA(MASettings.long);
+        const CHUNKSIZE = MASettings.candle;
 
         let lastCandleTimeStamp = '';
 
         // Get current ticker timestamp from bitstamp, then backdate it 48hours
         helper.currentTimestamp((timestamp) => {
-            console.log(new Date(1503545173 * 1000), 'here');
             let twoDays = 48 * 3600;
             timestamp = timestamp - twoDays;
 
@@ -49,13 +50,21 @@ mongoose
     })
     .catch(err => console.error(err));
 
-
 function analyzeCrosses (candles) {
-    candles.forEach((candle) => {
-        if (candle.longMA > candle.shortMA) {
-            console.log('Downtrend ', candle.close, new Date(candle.timestamp * 1000));
-        } else if (candle.longMA < candle.shortMA) {
-            console.log('Uptrend ', candle.close, new Date(candle.timestamp * 1000));
+    candles = candles.map((candle) => {
+        candle.trend = candle.longMA > candle.shortMA ? 'down' : 'up';
+        return candle;
+    });
+
+    candles.forEach((candle, index) => {
+        // trade here
+        // @TODO check if current trend is different from previous trend
+        if (index !== 0) {
+            if (candles[index - 1].trend !== candle.trend) {
+                trader.trade(candle);
+            }
         }
     });
+
+    console.log(trader.report());
 }

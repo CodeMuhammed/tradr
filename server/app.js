@@ -1,5 +1,6 @@
 const Candlestick = require('./models/candlestick');
 const helper = require('./helper');
+const settings = require('./settings');
 
 const run = () => {
     helper.currentTimestamp((timestamp) => {
@@ -17,7 +18,7 @@ const run = () => {
                 require('./services/cronjobService');
 
                 // @TODO create a watcher module instead
-                let MAService = require('./services/maService')(20, 10, 15);
+                let MAService = require('./services/maService')(settings.MA);
 
                 MAService.on('cross', (message) => {
                     console.log('cross here');

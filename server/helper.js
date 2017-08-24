@@ -2,7 +2,7 @@ const request = require('request');
 const Candlestick = require('./models/candlestick');
 
 // This function calculates the highest and lowest prices from the dataset
-let calculatePriceMinMax = (dataset) => {
+const calculatePriceMinMax = (dataset) => {
     let result = {
         minPrice: dataset[0].price_str || '0.00',
         maxPrice: dataset[0].price_str || '0.00'
@@ -22,7 +22,7 @@ let calculatePriceMinMax = (dataset) => {
 }
 
 // This function calculates the volume traded from the dataset
-let getVolumeTraded = (dataset) => {
+const getVolumeTraded = (dataset) => {
     let result = 0.00;
 
     dataset.forEach((data) => {
@@ -33,7 +33,7 @@ let getVolumeTraded = (dataset) => {
 }
 
 // This calculates the candle values from the dataset
-let getCandle = (dataset) => {
+const getCandle = (dataset) => {
     let priceRange = calculatePriceMinMax(dataset);
     let volume = getVolumeTraded(dataset);
 
@@ -50,7 +50,7 @@ let getCandle = (dataset) => {
 }
 
 // This returns the current time from the market
-let currentTimestamp = (cb) => {
+const currentTimestamp = (cb) => {
     request('https://www.bitstamp.net/api/ticker/', function (error, response, data) {
         if (error) {
             console.log(error);
@@ -66,7 +66,7 @@ let currentTimestamp = (cb) => {
 }
 
 // This function group the candles into ${size}mins candles
-let groupCandles = (dataset, size) => {
+const groupCandles = (dataset, size) => {
     console.log(`grouping ${dataset.length} candles`);
     let result = [];
 
@@ -84,8 +84,8 @@ let groupCandles = (dataset, size) => {
 }
 
 // This function hits the database and returns the candle sticks
-let getCandles = (timestamp, size, cb) => {
-    Candlestick.find({timestamp: { $gt: timestamp }}, (err, docs) => {
+const getCandles = (timestamp, size, cb) => {
+    Candlestick.find().sort({timestamp: 1}).find({timestamp: { $gt: timestamp }}, (err, docs) => {
         if (err) {
             console.log(err);
             throw new Error('Could not initialize moving average service');
