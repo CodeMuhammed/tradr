@@ -93,6 +93,7 @@ let getCandles = (timestamp, size, cb) => {
             // truncate the last portion that are not up to 30 candles
             let extraCandles = docs.length % size;
             docs = docs.splice(0, docs.length - extraCandles);
+
             if (docs.length > 0) {
                 cb(docs);
             } else {

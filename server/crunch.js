@@ -10,7 +10,7 @@ mongoose
     .connect(dbUrl, { useMongoClient: true })
     .then(() => {
         console.log('connected successfully to the database');
-        const shortMA = new MA(5);
+        const shortMA = new MA(20);
         const longMA = new MA(40);
         const CHUNKSIZE = 5;
 
@@ -18,7 +18,9 @@ mongoose
 
         // Get current ticker timestamp from bitstamp, then backdate it 48hours
         helper.currentTimestamp((timestamp) => {
-            timestamp = timestamp - (48 * 3600);
+            console.log(new Date(1503545173 * 1000), 'here');
+            let twoDays = 48 * 3600;
+            timestamp = timestamp - twoDays;
 
             helper.getCandles(timestamp, CHUNKSIZE, (docs) => {
                 if (docs) {

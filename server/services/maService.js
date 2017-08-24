@@ -13,6 +13,7 @@ module.exports = (long, short, timeInterval) => {
 
     // Get current ticker timestamp from bitstamp, then backdate it 48hours
     helper.currentTimestamp((timestamp) => {
+        console.log(new Date(1503567099 * 1000), 'here');
         timestamp = timestamp - (30 * 24 * 3600);
 
         helper.getCandles(timestamp, CHUNKSIZE, (docs) => {
