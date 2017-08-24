@@ -26,9 +26,6 @@ module.exports = () => {
             Candlestick.create(candleStick, (err, info) => {
                 if (err) {
                     console.log('Could not create candle');
-                } else {
-                    // update moving average calculator with recent data
-                    console.log('Candle created');
                 }
             });
         }
