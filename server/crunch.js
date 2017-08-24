@@ -1,6 +1,5 @@
 require('dotenv').config();
 
-const request = require('request');
 const mongoose = require('mongoose');
 const MA = require('./indicators').MA;
 const helper = require('./helper');
@@ -11,8 +10,8 @@ mongoose
     .connect(dbUrl, { useMongoClient: true })
     .then(() => {
         console.log('connected successfully to the database');
-        const shortMA = new MA(10);
-        const longMA = new MA(20);
+        const shortMA = new MA(5);
+        const longMA = new MA(40);
         const CHUNKSIZE = 5;
 
         let lastCandleTimeStamp = '';

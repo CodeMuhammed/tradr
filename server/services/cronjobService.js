@@ -1,3 +1,5 @@
+const request = require('request');
+
 function ping () {
     request('http://stocktradr.herokuapp.com/ping', function (error, response, data) {
         if (error) {
