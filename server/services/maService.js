@@ -11,23 +11,17 @@ module.exports = (settings) => {
     let candleData = [];
     let lastCandleTimeStamp = '';
 
-    // Get current ticker timestamp from bitstamp, then backdate it 48hours
-    helper.currentTimestamp((timestamp) => {
-        let thirtyDays = 30 * 24 * 3600;
-        timestamp = timestamp - thirtyDays;
+    helper.getCandles(1, CHUNKSIZE, (docs) => {
+        if (docs) {
+            let sampleCandles = helper.groupCandles(docs, CHUNKSIZE);
+            lastCandleTimeStamp = docs[docs.length - 1].timestamp;
 
-        helper.getCandles(timestamp, CHUNKSIZE, (docs) => {
-            if (docs) {
-                let sampleCandles = helper.groupCandles(docs, CHUNKSIZE);
-                lastCandleTimeStamp = docs[docs.length - 1].timestamp;
-
-                mapMovingAverages(sampleCandles);
-                candleData = sampleCandles;
-                runCron();
-            } else {
-                console.log('No dataset collected so far');
-            }
-        })
+            mapMovingAverages(sampleCandles);
+            candleData = sampleCandles;
+            runCron();
+        } else {
+            console.log('No dataset collected so far');
+        }
     });
 
     // This function calculates the moving average for each candle stick

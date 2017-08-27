@@ -1,12 +1,7 @@
-let BTCBalance = 1;
-let USDBalance = 0.00;
+let BTCBalance = 0;
+let USDBalance = 1000.00;
 
 const trade = (candle) => {
-    let offset = new Date().getTimezoneOffset() * 60;
-    let timestamp = candle.timestamp - offset;
-    let date = new Date(timestamp * 1000).toUTCString();
-
-    console.log(`At ${date}`);
     if (candle.trend === 'up') {
         buyBTC(candle);
     } else {
