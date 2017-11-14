@@ -4,15 +4,15 @@ const Candlestick = require('./models/candlestick');
 // This function calculates the highest and lowest prices from the dataset
 const calculatePriceMinMax = (dataset) => {
     let result = {
-        minPrice: dataset[0].price_str || '0.00',
-        maxPrice: dataset[0].price_str || '0.00'
+        minPrice: dataset[0].price_str || 0.00,
+        maxPrice: dataset[0].price_str || 0.00
     };
 
     if (dataset.length > 0) {
         dataset.forEach((data) => {
             if (parseFloat(data.price_str) < parseFloat(result.minPrice)) {
                 result.minPrice = data.price_str
-            } else if (parseFloat(data.price_str) > parseFloat(result.minPrice)) {
+            } else if (parseFloat(data.price_str) > parseFloat(result.maxPrice)) {
                 result.maxPrice = data.price_str
             }
         });
@@ -36,6 +36,8 @@ const getVolumeTraded = (dataset) => {
 const getCandle = (dataset) => {
     let priceRange = calculatePriceMinMax(dataset);
     let volume = getVolumeTraded(dataset);
+
+    console.log(priceRange);
 
     return {
         open: dataset[0].price_str,

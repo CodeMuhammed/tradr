@@ -46,6 +46,9 @@ mongoose
     .catch(err => console.error(err));
 
 function analyzeCrosses (candles) {
+    let sum = 0.00;
+    let length = 0;
+
     candles = candles.map((candle) => {
         candle.trend = candle.longMA > candle.shortMA ? 'down' : 'up';
         return candle;
@@ -62,10 +65,14 @@ function analyzeCrosses (candles) {
 
                 trader.trade(candle);
                 let report = trader.report();
+                sum += report.BTC;
+                length += 1;
 
                 console.log('===============================================================================');
                 console.log(`${report.BTC}        |                  ${report.USD}         |        ${date}`);
             }
         }
     });
+
+    console.log('Average BTC value is: ', (sum / length) * 2);
 }

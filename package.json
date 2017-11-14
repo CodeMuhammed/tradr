@@ -5,6 +5,7 @@
   "main": "test.js",
   "scripts": {
     "start": "supervisor index",
+    "crunch": "node server/crunch",
     "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "keywords": [
@@ -18,6 +19,8 @@
     "body-parser": "^1.17.2",
     "cors": "^2.8.4",
     "dotenv": "^4.0.0",
+    "email-check": "^1.1.0",
+    "email-verify": "^0.1.1",
     "eslint-config-standard": "^10.2.1",
     "express": "^4.15.3",
     "method-override": "^2.3.9",
@@ -28,7 +31,8 @@
     "pusher": "^1.5.1",
     "pusher-client": "^1.1.0",
     "request": "^2.81.0",
-    "technicalindicators": "^1.0.17"
+    "technicalindicators": "^1.0.17",
+    "validator": "^8.2.0"
   },
   "devDependencies": {
     "eslint": "^4.3.0",

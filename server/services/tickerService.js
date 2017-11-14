@@ -14,7 +14,6 @@ bitstamp.bind('trade', (e) => {
     latestDataset.push(e);
 });
 
-// This module exports the event emitter.
 module.exports = () => {
     // calculate the low high open, close, volume then reset the dataset
     // At 1 min intervals
@@ -32,3 +31,4 @@ module.exports = () => {
         latestDataset = [];
     }, (1000 * 60));
 };
+
