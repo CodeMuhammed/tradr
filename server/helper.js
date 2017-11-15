@@ -107,5 +107,7 @@ module.exports = {
     getCandle,
     currentTimestamp,
     groupCandles,
-    getCandles
+    getCandles,
+    getVolumeTraded,
+    calculatePriceMinMax
 };
