@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const MA = require('./indicators').MA;
 const MASettings = require('./settings').MA;
 const helper = require('./helper');
-const trader = require('./trader');
+const trader = require('./trader/offline_trade');
 
 const dbUrl = process.env.db_url_dev || process.env.db_url_prod;
 // connect to mongoose here
