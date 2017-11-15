@@ -13,7 +13,7 @@ mongoose
     .then(() => {
         console.log('connected successfully to the database');
         server.start(() => {
-            app().run();
+            app.run();
         });
     })
     .catch(err => console.error(err));

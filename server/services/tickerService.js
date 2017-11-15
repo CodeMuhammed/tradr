@@ -1,7 +1,6 @@
 const Pusher = require('pusher-client');
 const Candlestick = require('../models/candlestick');
 const helper = require('../helper');
-
 const BITSTAMP_PUSHER_KEY = 'de504dc5763aeef9ff52';
 
 let latestDataset = [];
@@ -14,7 +13,8 @@ bitstamp.bind('trade', (e) => {
     latestDataset.push(e);
 });
 
-module.exports = () => {
+let tick = () => {
+    console.log('Ticker started');
     // calculate the low high open, close, volume then reset the dataset
     // At 1 min intervals
     setInterval(() => {
@@ -32,3 +32,4 @@ module.exports = () => {
     }, (1000 * 60));
 };
 
+module.exports = { tick };

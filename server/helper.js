@@ -37,8 +37,6 @@ const getCandle = (dataset) => {
     let priceRange = calculatePriceMinMax(dataset);
     let volume = getVolumeTraded(dataset);
 
-    console.log(priceRange);
-
     return {
         open: dataset[0].price_str,
         close: dataset[dataset.length - 1].price_str,

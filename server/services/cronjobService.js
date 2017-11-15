@@ -1,7 +1,7 @@
 const request = require('request');
 
 function ping () {
-    request('http://stocktradr.herokuapp.com/ping', function (error, response, data) {
+    request('http://stocktradr.herokuapp.com/ping', (error, response, data) => {
         if (error) {
             throw new Error('Cannot ping site');
         } else {
@@ -10,8 +10,11 @@ function ping () {
     });
 }
 
-ping();
+let start = () => {
+    console.log('cron job started started');
+    setInterval(() => {
+        ping();
+    }, 10 * 60 * 1000);
+}
 
-setInterval(() => {
-    ping();
-}, 10 * 60 * 1000);
+module.exports = { start };
