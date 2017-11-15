@@ -78,5 +78,5 @@ module.exports = (settings) => {
         }, (CHUNKSIZE * 60 * 1000));
     }
 
-    return moduleEvents;
+    return { events: moduleEvents };
 }

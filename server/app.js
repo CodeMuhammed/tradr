@@ -3,6 +3,7 @@ const helper = require('./helper');
 const settings = require('./settings');
 const ticker = require('./services/tickerService');
 const cronJob = require('./services/cronjobService');
+const MAService = require('./services/maService')(settings.MA);
 
 const run = () => {
     ticker.tick();
@@ -19,15 +20,9 @@ const run = () => {
             if (err) {
                 throw new Error('Cannot truncate dataset');
             } else {
-                // @TODO create a watcher module instead
-                let MAService = require('./services/maService')(settings.MA);
-
-                MAService.on('cross', (message) => {
-                    // We triggger an entery into the market
-                    // we start the process in the service for max takeout
-
-                    // we trigger an emergency exit from the market
-                    // we end the process in the service for mas takeout
+                MAService.events.on('cross', (message) => {
+                    console.log(message);
+                    // @TODO we transfer functionality to the trading service
                 });
             }
         });

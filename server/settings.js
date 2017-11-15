@@ -2,6 +2,6 @@ module.exports = {
     MA: {
         short: 20,
         long: 40,
-        candle: 15
+        candle: 1
     }
 };
