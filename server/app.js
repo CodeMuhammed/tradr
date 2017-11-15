@@ -20,9 +20,10 @@ const run = () => {
             if (err) {
                 throw new Error('Cannot truncate dataset');
             } else {
-                MAService.events.on('cross', (message) => {
-                    console.log(message);
+                MAService.events.on('cross', (candle) => {
+                    console.log(candle);
                     // @TODO we transfer functionality to the trading service
+                    // tradingService.trade(candle, (err, stats) => { console.log(err || stats); });
                 });
             }
         });
