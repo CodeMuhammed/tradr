@@ -24,6 +24,9 @@ const run = () => {
                     console.log(candle);
                     // @TODO we transfer functionality to the trading service
                     // tradingService.trade(candle, (err, stats) => { console.log(err || stats); });
+                    // if enter, we enter a position with the trading service.
+                    // we start the MT-tracker algorithm, which monitors the market for maximum takeout, before 
+                    // the closing trigger is fired by the MA service.
                 });
             }
         });
