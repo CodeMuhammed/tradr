@@ -2,7 +2,7 @@ const Trade = require('../models/trade');
 const Bitstamp = require('bitstamp');
 const key = process.env.bitstamp_key;
 const secret = process.env.bitstamp_secret;
-const clientId = process.env.client_id;
+const clientId = process.env.bitstamp_client_id;
 const timeout = 1000;
 const market = 'btcusd';
 
@@ -132,3 +132,4 @@ module.exports = (validatorFn) => {
     init();
     return { trade } 
 }
+
