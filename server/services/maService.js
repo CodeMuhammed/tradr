@@ -57,6 +57,29 @@ module.exports = (settings) => {
         }
     }
 
+    // This function checks to see if we are still holding a valid position
+    function isValid (timestamp) {
+        let result = true;
+        let candleWithTimeStampIndex = -1;
+
+        candleData.forEach((candle, index) => {
+            if (candle.timestamp == timestamp) {
+                candleWithTimeStampIndex = index;
+            }
+        });
+
+        if (candleWithTimeStampIndex != -1) {
+            for (let i = candleWithTimeStampIndex; i < candleData.length; i++) {
+                let candle = candleData[i];
+                if (candle.trend != 'up') {
+                    result = false;
+                };
+            }
+        }
+
+        return result;
+    }
+
     // This cron job calculates the latest moving average every ${CHUNKSIZE} mins
     function runCron () {
         console.log(`Waiting for ${CHUNKSIZE} mins`);
@@ -78,5 +101,8 @@ module.exports = (settings) => {
         }, (CHUNKSIZE * 60 * 1000));
     }
 
-    return { events: moduleEvents };
+    return {
+        events: moduleEvents,
+        tradeValidator: { isValid }
+    };
 }
