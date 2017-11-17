@@ -3,9 +3,10 @@ const Schema = mongoose.Schema;
 
 const tradeSchema = new Schema({
     entryPrice: String,
-    entryTimeStamp: Number,
+    entryTimestamp: Number,
     exitPrice: String,
-    exitTimestamp: Number
+    exitTimestamp: Number,
+    status: String,
 });
 
 module.exports = mongoose.model('Trade', tradeSchema);
