@@ -27,12 +27,12 @@ const run = () => {
                     setTimeout(() => {
                         trader.trade(candle)
                             .then(
-                                (err) => {
-                                    console.log(err);
-                                },
                                 (stats) => {
                                     console.log('Trade operation successful', candle.trend);
                                     console.log(stats);
+                                },
+                                (err) => {
+                                    console.log(err);
                                 }
                             );
                     }, 5000);
