@@ -64,7 +64,7 @@ function analyzeCrosses (candles) {
                 let report = trader.report();
 
                 console.log('===============================================================================');
-                console.log(`${report.BTC}        |                  ${report.USD}         |        ${candle.timestamp}`);
+                console.log(`${report.BTC}        |                  ${report.USD}         |        ${date}`);
             }
         }
     });

@@ -21,6 +21,7 @@ let tradeObj = {
 let usdBalance;
 let btcBalance;
 let currentBtcPrice = 0.00;
+let defaultBtcReserve = 0.001;
 
 ticker.events.on('data', (data) => {
     currentBtcPrice = data.price || 0.00;
@@ -30,7 +31,7 @@ const amountToTrade = (amount, action) => {
     if (action == 'sell') {
         return btcBalance;
     } else {
-        let btcAmount = parseFloat(amount / currentBtcPrice).toFixed(4);
+        let btcAmount = (parseFloat(amount / currentBtcPrice).toFixed(3)) - defaultBtcReserve;
         return currentBtcPrice > 0 ? btcAmount : 0.00;
     }
 }
@@ -77,9 +78,9 @@ const validateTrade = (tradeObject) => {
 }
 
 const buyMarket = (candle) => {
-    // Buy market
     return new Promise((resolve, reject) => {
         let amount = amountToTrade(usdBalance, 'buy');
+        console.log(amount);
 
         myBitstamp.buyMarket(market, amount, (err, res) => {
             if (err || res.status == 'error') {
@@ -132,7 +133,6 @@ const trade = (candle) => {
         let sell = tradeObj.status && candle.trend == 'down';
 
         if (buy) {
-            console.log('buying');
             buyMarket(candle)
                 .then(
                     (stats) => {
@@ -145,7 +145,6 @@ const trade = (candle) => {
         }
 
         if (sell) {
-            console.log('selling');
             sellMarket(candle)
                 .then(
                     (stats) => {
@@ -170,6 +169,6 @@ const init = () => {
 
 module.exports = (tradeValidator) => {
     tradeValidatorFn = tradeValidator;
-    init();
-    return { trade };
+
+    return { trade, init };
 }
