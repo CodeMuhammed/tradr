@@ -78,9 +78,9 @@ const validateTrade = (tradeObject) => {
 }
 
 const buyMarket = (candle) => {
+    console.log('Buying');
     return new Promise((resolve, reject) => {
         let amount = amountToTrade(usdBalance, 'buy');
-        console.log(amount);
 
         myBitstamp.buyMarket(market, amount, (err, res) => {
             if (err || res.status == 'error') {
@@ -104,6 +104,7 @@ const buyMarket = (candle) => {
 };
 
 const sellMarket = (candle) => {
+    console.log('Selling');
     let amount = amountToTrade(btcBalance, 'sell');
 
     return new Promise((resolve, reject) => {
