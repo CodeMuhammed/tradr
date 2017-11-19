@@ -9,7 +9,6 @@ const trader = require('./services/traderService')(MAService.tradeValidator);
 
 const run = () => {
     ticker.tick();
-    trader.init();
     cronJob.start();
 
     helper.currentTimestamp((timestamp) => {
@@ -27,12 +26,12 @@ const run = () => {
                     setTimeout(() => {
                         trader.trade(candle)
                             .then(
-                                (err) => {
-                                    console.log(err);
-                                },
                                 (stats) => {
                                     console.log('Trade operation successful', candle.trend);
                                     console.log(stats);
+                                },
+                                (err) => {
+                                    console.log(err);
                                 }
                             );
                     }, 5000);

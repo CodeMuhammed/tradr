@@ -168,7 +168,8 @@ const init = () => {
 }
 
 module.exports = (tradeValidator) => {
+    init();
     tradeValidatorFn = tradeValidator;
 
-    return { trade, init };
+    return { trade };
 }

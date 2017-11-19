@@ -9,7 +9,6 @@ const mongoose = require('mongoose');
 const dbUrl = process.env.db_url_dev || process.env.db_url_prod;
 
 const trader = require('./server/services/traderService')(tradeValidator);
-trader.init();
 
 let candle = {
     open: '7468.26',
@@ -32,12 +31,12 @@ mongoose
         setTimeout(() => {
             trader.trade(candle)
                 .then(
-                    (err) => {
-                        console.log(err);
-                    },
                     (stats) => {
                         console.log('Trade operation successful', candle.trend);
                         console.log(stats);
+                    },
+                    (err) => {
+                        console.log(err);
                     }
                 );
         }, 5000);
