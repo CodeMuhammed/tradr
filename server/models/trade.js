@@ -6,7 +6,7 @@ const tradeSchema = new Schema({
     entryTimestamp: Number,
     exitPrice: String,
     exitTimestamp: Number,
-    status: String,
+    status: String
 });
 
 module.exports = mongoose.model('Trade', tradeSchema);

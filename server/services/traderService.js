@@ -1,5 +1,6 @@
 const Trade = require('../models/trade');
 const Bitstamp = require('bitstamp');
+const ticker = require('./tickerService');
 const key = process.env.bitstamp_key;
 const secret = process.env.bitstamp_secret;
 const clientId = process.env.bitstamp_client_id;
@@ -19,6 +20,20 @@ let tradeObj = {
 
 let usdBalance;
 let btcBalance;
+let currentBtcPrice = 0.00;
+
+ticker.events.on('data', (data) => {
+    currentBtcPrice = data.price || 0.00;
+});
+
+const amountToTrade = (amount, action) => {
+    if (action == 'sell') {
+        return btcBalance;
+    } else {
+        let btcAmount = parseFloat(amount / currentBtcPrice).toFixed(4);
+        return currentBtcPrice > 0 ? btcAmount : 0.00;
+    }
+}
 
 const getBalance = () => {
     myBitstamp.balance(null, (err, balances) => {
@@ -29,6 +44,9 @@ const getBalance = () => {
         } else {
             usdBalance = balances.usd_available;
             btcBalance = balances.btc_available;
+
+            console.log('BTC: ', btcBalance);
+            console.log('USD: ', usdBalance);
             console.log(`balance operation successful`);
         }
     })
@@ -61,7 +79,9 @@ const validateTrade = (tradeObject) => {
 const buyMarket = (candle) => {
     // Buy market
     return new Promise((resolve, reject) => {
-        myBitstamp.buyMarket(market, usdBalance, (err, res) => {
+        let amount = amountToTrade(usdBalance, 'buy');
+
+        myBitstamp.buyMarket(market, amount, (err, res) => {
             if (err || res.status == 'error') {
                 reject(err || res);
             } else {
@@ -83,9 +103,10 @@ const buyMarket = (candle) => {
 };
 
 const sellMarket = (candle) => {
-    // Sell market 
+    let amount = amountToTrade(btcBalance, 'sell');
+
     return new Promise((resolve, reject) => {
-        myBitstamp.sellMarket(market, btcBalance, (err, res) => {
+        myBitstamp.sellMarket(market, amount, (err, res) => {
             if (err || res.status == 'error') {
                 reject(err || res);
             } else {
