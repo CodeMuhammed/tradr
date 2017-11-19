@@ -9,7 +9,6 @@ const trader = require('./services/traderService')(MAService.tradeValidator);
 
 const run = () => {
     ticker.tick();
-    trader.init();
     cronJob.start();
 
     helper.currentTimestamp((timestamp) => {
