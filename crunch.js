@@ -1,10 +1,10 @@
 require('dotenv').config();
 
 const mongoose = require('mongoose');
-const MA = require('./indicators').MA;
-const MASettings = require('./settings').MA;
-const helper = require('./helper');
-const trader = require('./trader/offline_trade');
+const MA = require('./server/indicators').MA;
+const MASettings = require('./server/settings').MA;
+const helper = require('./server/helper');
+const trader = require('./server/trader/offline_trade');
 
 const dbUrl = process.env.db_url_dev || process.env.db_url_prod;
 // connect to mongoose here
@@ -46,9 +46,6 @@ mongoose
     .catch(err => console.error(err));
 
 function analyzeCrosses (candles) {
-    let sum = 0.00;
-    let length = 0;
-
     candles = candles.map((candle) => {
         candle.trend = candle.longMA > candle.shortMA ? 'down' : 'up';
         return candle;
@@ -65,14 +62,40 @@ function analyzeCrosses (candles) {
 
                 trader.trade(candle);
                 let report = trader.report();
-                sum += report.BTC;
-                length += 1;
 
                 console.log('===============================================================================');
-                console.log(`${report.BTC}        |                  ${report.USD}         |        ${date}`);
+                console.log(`${report.BTC}        |                  ${report.USD}         |        ${candle.timestamp}`);
             }
         }
     });
+}
 
-    console.log('Average BTC value is: ', (sum / length) * 2);
+
+function testValidator (timestamp, candles) {
+    let result = isValid(timestamp, candles);
+    console.log(result);
+}
+
+function isValid (timestamp, candleData) {
+    // look for a candle that matches this timestamp
+    // from that point, search to see if a down trend has happened
+    let result = true;
+    let candleWithTimeStampIndex = -1;
+
+    candleData.forEach((candle, index) => {
+        if (candle.timestamp == timestamp) {
+            candleWithTimeStampIndex = index;
+        }
+    });
+
+    if (candleWithTimeStampIndex != -1) {
+        for (let i = candleWithTimeStampIndex; i < candleData.length; i++) {
+            let candle = candleData[i];
+            if (candle.trend != 'up') {
+                result = false;
+            };
+        }
+    }
+
+    return result;
 }

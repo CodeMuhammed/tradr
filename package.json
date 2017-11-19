@@ -5,7 +5,6 @@
   "main": "test.js",
   "scripts": {
     "start": "supervisor index",
-    "crunch": "node server/crunch",
     "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "keywords": [

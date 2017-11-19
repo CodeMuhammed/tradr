@@ -2,6 +2,8 @@ const Pusher = require('pusher-client');
 const Candlestick = require('../models/candlestick');
 const helper = require('../helper');
 const BITSTAMP_PUSHER_KEY = 'de504dc5763aeef9ff52';
+const EventEmitter = require('events').EventEmitter;
+const moduleEvents = new EventEmitter;
 
 let latestDataset = [];
 let bitstamp = new Pusher(BITSTAMP_PUSHER_KEY, {
@@ -11,6 +13,7 @@ let bitstamp = new Pusher(BITSTAMP_PUSHER_KEY, {
 bitstamp.subscribe('live_trades');
 bitstamp.bind('trade', (e) => {
     latestDataset.push(e);
+    moduleEvents.emit('data', e);
 });
 
 let tick = () => {
@@ -32,4 +35,7 @@ let tick = () => {
     }, (1000 * 60));
 };
 
-module.exports = { tick };
+module.exports = {
+    tick,
+    events: moduleEvents
+};

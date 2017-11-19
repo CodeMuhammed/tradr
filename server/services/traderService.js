@@ -1,5 +1,6 @@
 const Trade = require('../models/trade');
 const Bitstamp = require('bitstamp');
+const ticker = require('./tickerService');
 const key = process.env.bitstamp_key;
 const secret = process.env.bitstamp_secret;
 const clientId = process.env.bitstamp_client_id;
@@ -14,43 +15,61 @@ let tradeObj = {
     entryTimestamp: 0,
     exitPrice: '',
     exitTimestamp: 0,
-    status: '',
+    status: ''
 };
 
 let usdBalance;
 let btcBalance;
+let currentBtcPrice = 0.00;
+
+ticker.events.on('data', (data) => {
+    currentBtcPrice = data.price || 0.00;
+});
+
+const amountToTrade = (amount, action) => {
+    if (action == 'sell') {
+        return btcBalance;
+    } else {
+        let btcAmount = parseFloat(amount / currentBtcPrice).toFixed(4);
+        return currentBtcPrice > 0 ? btcAmount : 0.00;
+    }
+}
 
 const getBalance = () => {
     myBitstamp.balance(null, (err, balances) => {
-        if(err) {
+        if (err) {
             // Send email to developers
             console.log(err)
             console.log(`Could not get balance from Bitstamp`);
+        } else {
+            usdBalance = balances.usd_available;
+            btcBalance = balances.btc_available;
+
+            console.log('BTC: ', btcBalance);
+            console.log('USD: ', usdBalance);
+            console.log(`balance operation successful`);
         }
-        usdBalance = balances.usd_available;
-        btcBalance = balances.btc_available;
-        console.log(`balance operation successful`);
     })
 };
 
 const getOpenedTrade = () => {
     // Find opened trade in DB
-    Trade.findOne({ status: 'opened'}, (err, data) => {
-        if(err) {
+    Trade.findOne({ status: 'opened' }, (err, data) => {
+        if (err) {
             console.log(`Unable to query trade DB`);
             // Send us Email
         } else {
-            if(data) {
+            if (data) {
                 validateTrade(data);
             } else {
-                console.log('here', data);
+                console.log('No opened trades');
             }
         }
     })
 };
 
 const validateTrade = (tradeObject) => {
-    if(tradeValidatorFn.isValid(tradeObj.entryTimeStamp)) {
+    if (tradeValidatorFn.isValid(tradeObj.entryTimeStamp)) {
         tradeObj = tradeObject;
     } else {
         sellMarket({});
@@ -59,77 +78,98 @@ const validateTrade = (tradeObject) => {
 
 const buyMarket = (candle) => {
     // Buy market
-    myBitstamp.buyMarket(market, usdBalance, (err, res) => {
-        if(err && res.status == 'error') {
-            console.log('Unable to buy asset');
-        } else {
-            console.log('BTC purchased');
-            console.log(res);
+    return new Promise((resolve, reject) => {
+        let amount = amountToTrade(usdBalance, 'buy');
 
-            tradeObj.entryPrice = res.price || 0;
-            tradeObj.entryTimestamp = candle.timestamp;
-            tradeObj.status = 'opened';
+        myBitstamp.buyMarket(market, amount, (err, res) => {
+            if (err || res.status == 'error') {
+                reject(err || res);
+            } else {
+                tradeObj.entryPrice = res.price || 0;
+                tradeObj.entryTimestamp = candle.timestamp;
+                tradeObj.status = 'opened';
 
-            const tradeData = new Trade(tradeObj);
-            tradeData.save((err, res) => {
-                if (err) {
-                    console.log('Could not save trade data');
-                } else {
-                    tradeObj = res;
-                    console.log('Trade data saved');
-                }
-            });
-        }
+                const tradeData = new Trade(tradeObj);
+                tradeData.save((err, stat) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(res);
+                    }
+                });
+            }
+        });
     });
-}
+};
 
 const sellMarket = (candle) => {
-    // Sell market 
-    myBitstamp.sellMarket(market, btcBalance, (err, res) => {
-        if(err && res.status == 'error') {
-            console.log(err);
-            console.log(`Unable to sell BTC`);
-        } else {
-            console.log(`BTC sold`);
-            console.log(res);
+    let amount = amountToTrade(btcBalance, 'sell');
 
-            tradeObj.exitPrice = res.price || 0;
-            tradeObj.exitTimestamp = candle.timestamp;
-            tradeObj.status = 'closed';
-            console.log(candle)
-            console.log(tradeObj);
+    return new Promise((resolve, reject) => {
+        myBitstamp.sellMarket(market, amount, (err, res) => {
+            if (err || res.status == 'error') {
+                reject(err || res);
+            } else {
+                tradeObj.exitPrice = res.price || 0;
+                tradeObj.exitTimestamp = candle.timestamp;
+                tradeObj.status = 'closed';
 
-            Trade.update({ _id: tradeObj._id }, tradeObj, (err, res) => {
-                if(err) {
-                    console.log(err);
-                    console.log(`Unable to update the trade`);
-                } else {
-                    console.log(`Trade updated`);
-                }
-            })
-        }
+                Trade.update({ _id: tradeObj._id }, tradeObj, (err, stat) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(res);
+                    }
+                })
+            }
+        });
     });
 };
 
 const trade = (candle) => {
-    if(!tradeObj.status && candle.trend == 'up') {
-        buyMarket(candle);
-    }
+    return new Promise((resolve, reject) => {
+        let buy = !tradeObj.status && candle.trend == 'up';
+        let sell = tradeObj.status && candle.trend == 'down';
 
-    if(tradeObj.status && candle.trend == 'down') {
-        sellMarket(candle);
-    }
+        if (buy) {
+            console.log('buying');
+            buyMarket(candle)
+                .then(
+                    (stats) => {
+                        return resolve(stats);
+                    },
+                    (err) => {
+                        return reject(err);
+                    }
+                );
+        }
+
+        if (sell) {
+            console.log('selling');
+            sellMarket(candle)
+                .then(
+                    (stats) => {
+                        return resolve(stats);
+                    },
+                    (err) => {
+                        return reject(err);
+                    }
+                );
+        }
+
+        if (!buy && !sell) {
+            return reject(new Error('Invalid trade'));
+        }
+    });
 };
 
-const init = () =>{
-    console.log(`Getting Here`)
+const init = () => {
     getBalance();
     getOpenedTrade();
 }
 
-module.exports = (validatorFn) => {
-    tradeValidatorFn = validatorFn;
+module.exports = (tradeValidator) => {
+    tradeValidatorFn = tradeValidator;
     init();
-    return { trade } 
+    return { trade };
 }
-

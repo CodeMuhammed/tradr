@@ -4,6 +4,7 @@ const settings = require('./settings');
 const ticker = require('./services/tickerService');
 const cronJob = require('./services/cronjobService');
 const MAService = require('./services/maService')(settings.MA);
+const traderService = require('./services/traderService');
 
 const run = () => {
     ticker.tick();
@@ -21,12 +22,16 @@ const run = () => {
                 throw new Error('Cannot truncate dataset');
             } else {
                 MAService.events.on('cross', (candle) => {
-                    console.log(candle);
-                    // @TODO we transfer functionality to the trading service
-                    // tradingService.trade(candle, (err, stats) => { console.log(err || stats); });
-                    // if enter, we enter a position with the trading service.
-                    // we start the MT-tracker algorithm, which monitors the market for maximum takeout, before 
-                    // the closing trigger is fired by the MA service.
+                    let trader = traderService(MAService.tradeValidator);
+                    trader.trade(candle)
+                        .then(
+                            (err) => {
+                                console.log(err);
+                            },
+                            (stats) => {
+                                console.log(stats);
+                            }
+                        );
                 });
             }
         });
