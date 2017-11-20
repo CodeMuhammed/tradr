@@ -4,8 +4,9 @@
   "description": "A financial trading tool",
   "main": "test.js",
   "scripts": {
-    "start": "supervisor index",
-    "heroku-postbuild": "cd client && npm install && npm run build"
+    "heroku-postbuild": "cd client && npm install && npm run build",
+    "info": "node ./reports/info",
+    "start": "supervisor index"    
   },
   "keywords": [
     "stock",
