@@ -36,10 +36,10 @@ const amountToTrade = (amount, action) => {
     }
 }
 
-const getBalance = () => {
+const getBalance = (callback) => {
     myBitstamp.balance(null, (err, balances) => {
         if (err) {
-            // Send email to developers
+            // Send email to developers @restart or @retry
             console.log(err)
             console.log(`Could not get balance from Bitstamp`);
         } else {
@@ -49,6 +49,8 @@ const getBalance = () => {
             console.log('BTC: ', btcBalance);
             console.log('USD: ', usdBalance);
             console.log(`balance operation successful`);
+
+            callback();
         }
     })
 };
@@ -57,23 +59,31 @@ const getOpenedTrade = () => {
     // Find opened trade in DB
     Trade.findOne({ status: 'opened' }, (err, data) => {
         if (err) {
+            // Send email to developers @restart or @retry
             console.log(`Unable to query trade DB`);
-            // Send us Email
         } else {
             if (data) {
                 validateTrade(data);
             } else {
                 console.log('No opened trades');
+                // @TODO we may want to use this opportunity to trim the candles down
             }
         }
     })
 };
 
-const validateTrade = (tradeObject) => {
-    if (tradeValidatorFn.isValid(tradeObj.entryTimeStamp)) {
-        tradeObj = tradeObject;
+const validateTrade = (trade) => {
+    if (tradeValidatorFn.isValid(trade.entryTimestamp)) {
+        console.log('Trade is still valid');
+        tradeObj = trade;
     } else {
-        sellMarket({});
+        console.log('Trade invalid closing position');
+        sellMarket({})
+            .then((stat) => {
+                console.log(stat);
+            }, (err) => {
+                console.log(err);
+            });
     }
 }
 
@@ -112,8 +122,9 @@ const sellMarket = (candle) => {
             if (err || res.status == 'error') {
                 reject(err || res);
             } else {
+                console.log('hrere');
                 tradeObj.exitPrice = res.price || 0;
-                tradeObj.exitTimestamp = candle.timestamp;
+                tradeObj.exitTimestamp = candle.timestamp || 0;
                 tradeObj.status = 'closed';
 
                 Trade.update({ _id: tradeObj._id }, tradeObj, (err, stat) => {
@@ -129,6 +140,11 @@ const sellMarket = (candle) => {
 };
 
 const trade = (candle) => {
+    console.log('========================>>');
+    console.log(tradeObj);
+    console.log(candle);
+    console.log('========================>>');
+
     return new Promise((resolve, reject) => {
         let buy = !tradeObj.status && candle.trend == 'up';
         let sell = tradeObj.status && candle.trend == 'down';
@@ -164,8 +180,9 @@ const trade = (candle) => {
 };
 
 const init = () => {
-    getBalance();
-    getOpenedTrade();
+    getBalance(() => {
+        getOpenedTrade();
+    });
 }
 
 module.exports = (tradeValidator) => {

@@ -1,10 +1,10 @@
 require('dotenv').config();
 
 const mongoose = require('mongoose');
-const MA = require('./server/indicators').MA;
-const MASettings = require('./server/settings').MA;
-const helper = require('./server/helper');
-const trader = require('./server/trader/offline_trade');
+const MA = require('../server/indicators').MA;
+const MASettings = require('../server/settings').MA;
+const helper = require('../server/helper');
+const trader = require('../server/trader/offline_trade');
 
 const dbUrl = process.env.db_url_dev || process.env.db_url_prod;
 // connect to mongoose here

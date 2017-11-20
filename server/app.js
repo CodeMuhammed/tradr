@@ -5,38 +5,27 @@ const ticker = require('./services/tickerService');
 const cronJob = require('./services/cronjobService');
 const MAService = require('./services/maService')(settings.MA);
 const traderService = require('./services/traderService');
-const trader = require('./services/traderService')(MAService.tradeValidator);
 
 const run = () => {
-    ticker.tick();
-    cronJob.start();
+    MAService.init(() => {
+        const trader = traderService(MAService.tradeValidator);
+        ticker.tick();
+        cronJob.start();
 
-    helper.currentTimestamp((timestamp) => {
-        let days = 30 * 24 * 3600;
-        timestamp = timestamp - days;
-
-        // delete all data older than 30days
-        Candlestick.remove({
-            timestamp: { $lte: timestamp }
-        }, (err, stats) => {
-            if (err) {
-                throw new Error('Cannot truncate dataset');
-            } else {
-                MAService.events.on('cross', (candle) => {
-                    setTimeout(() => {
-                        trader.trade(candle)
-                            .then(
-                                (stats) => {
-                                    console.log('Trade operation successful', candle.trend);
-                                    console.log(stats);
-                                },
-                                (err) => {
-                                    console.log(err);
-                                }
-                            );
-                    }, 5000);
-                });
-            }
+        MAService.events.on('cross', (candle) => {
+            console.log('Cross Registered =>>>>>>>>>>>>>>>>>>');
+            setTimeout(() => {
+                trader.trade(candle)
+                    .then(
+                        (stats) => {
+                            console.log('Trade operation successful', candle.trend);
+                            console.log(stats);
+                        },
+                        (err) => {
+                            console.log(err);
+                        }
+                    );
+            }, 5000);
         });
     });
 }

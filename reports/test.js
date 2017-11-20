@@ -8,7 +8,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const dbUrl = process.env.db_url_dev || process.env.db_url_prod;
 
-const trader = require('./server/services/traderService')(tradeValidator);
+const trader = require('../server/services/traderService')(tradeValidator);
 
 let candle = {
     open: '7468.26',
@@ -29,7 +29,7 @@ mongoose
     .connect(dbUrl, { useMongoClient: true })
     .then(() => {
         setTimeout(() => {
-            trader.trade(candle)
+            /*trader.trade(candle)
                 .then(
                     (stats) => {
                         console.log('Trade operation successful', candle.trend);
@@ -38,6 +38,6 @@ mongoose
                     (err) => {
                         console.log(err);
                     }
-                );
+                );*/
         }, 5000);
     });
