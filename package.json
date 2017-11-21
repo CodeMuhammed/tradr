@@ -7,7 +7,7 @@
     "start": "supervisor index",
     "crunch": "node server/crunch",
     "heroku-postbuild": "cd client && npm install && npm run build",
-    "test": "nyc ./node_modules/.bin/mocha"
+    "test": "nyc ./node_modules/.bin/_mocha"
   },
   "keywords": [
     "stock",
