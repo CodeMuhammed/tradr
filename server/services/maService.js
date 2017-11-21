@@ -8,21 +8,47 @@ module.exports = (settings) => {
     const longMA = new MA(settings.long);
     const CHUNKSIZE = settings.candle;
 
-    let candleData = [];
+    let candlesData = [];
     let lastCandleTimeStamp = '';
 
-    helper.getCandles(1, CHUNKSIZE, (docs) => {
-        if (docs) {
-            let sampleCandles = helper.groupCandles(docs, CHUNKSIZE);
-            lastCandleTimeStamp = docs[docs.length - 1].timestamp;
+    function init (callback) {
+        helper.getCandles(1, CHUNKSIZE, (docs) => {
+            if (docs) {
+                let sampleCandles = helper.groupCandles(docs, CHUNKSIZE);
+                lastCandleTimeStamp = docs[docs.length - 1].timestamp;
 
-            mapMovingAverages(sampleCandles);
-            candleData = sampleCandles;
-            runCron();
-        } else {
-            console.log('No dataset collected so far');
+                mapMovingAverages(sampleCandles);
+                candlesData = sampleCandles;
+                runCron();
+                callback();
+            } else {
+                console.log('No dataset collected so far');
+            }
+        });
+    }
+
+    // This function checks to see if we are still holding a valid position
+    function isValid (timestamp) {
+        let result = true;
+        let candleWithTimeStampIndex = -1;
+
+        candlesData.forEach((candle, index) => {
+            if (candle.timestamp == timestamp) {
+                candleWithTimeStampIndex = index;
+            }
+        });
+
+        if (candleWithTimeStampIndex != -1) {
+            for (let i = candleWithTimeStampIndex; i < candlesData.length; i++) {
+                let candle = candlesData[i];
+                if (candle.trend != 'up') {
+                    result = false;
+                };
+            }
         }
-    });
+
+        return result;
+    }
 
     // This function calculates the moving average for each candle stick
     function mapMovingAverages (sampleCandles) {
@@ -40,6 +66,8 @@ module.exports = (settings) => {
 
                 return candle;
             });
+
+            console.log('Candles generated');
         } else {
             console.log('not enough data to calculate moving averages');
         }
@@ -47,8 +75,8 @@ module.exports = (settings) => {
 
     // This function detects trend reversal
     function checkForTrendReversal () {
-        let prevCandle = candleData[candleData.length - 2];
-        let lastCandle = candleData[candleData.length - 1];
+        let prevCandle = candlesData[candlesData.length - 2];
+        let lastCandle = candlesData[candlesData.length - 1];
 
         if (prevCandle.trend !== lastCandle.trend) {
             moduleEvents.emit('cross', lastCandle);
@@ -68,7 +96,7 @@ module.exports = (settings) => {
                     lastCandleTimeStamp = docs[docs.length - 1].timestamp;
 
                     mapMovingAverages(sampleCandles);
-                    candleData = candleData.concat(sampleCandles);
+                    candlesData = candlesData.concat(sampleCandles);
                     checkForTrendReversal();
                     return runCron();
                 } else {
@@ -78,5 +106,9 @@ module.exports = (settings) => {
         }, (CHUNKSIZE * 60 * 1000));
     }
 
-    return { events: moduleEvents };
+    return {
+        init,
+        events: moduleEvents,
+        tradeValidator: { isValid }
+    };
 }
