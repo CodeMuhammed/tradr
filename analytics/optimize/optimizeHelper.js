@@ -20,10 +20,6 @@ const generateTradeData = (candle, cb) => {
             helper.getCandles(timestamp, CHUNKSIZE, (docs) => {
                 if (docs) {
                     let sampleCandles = helper.groupCandles(docs, CHUNKSIZE);
-                    // lastCandleTimeStamp = docs[docs.length - 1].timestamp;
-
-                    // let candle = mapMovingAverages(sampleCandles);
-                    // console.log(1, sampleCandles);
                     cb(sampleCandles);
                 }
             });
