@@ -45,6 +45,8 @@ module.exports = (settings) => {
             }
         }
 
+        console.log(candleWithTimeStampIndex, 'here candleWithTimeStampIndex');
+
         return result;
     }
 

@@ -20,12 +20,9 @@ let tradeObj = {
 
 let usdBalance;
 let btcBalance;
-let currentBtcPrice = 0.00;
+let currentBtcPrice;
 let defaultBtcReserve = 0.001;
-
-ticker.events.on('data', (data) => {
-    currentBtcPrice = data.price || 0.00;
-});
+let tickerStreaming = false;
 
 const amountToTrade = (amount, action) => {
     if (action == 'sell') {
@@ -82,13 +79,15 @@ const validateTrade = () => {
             }, (err) => {
                 console.log(err);
             });
+    } else {
+        console.log('Trade is still valid');
     }
 }
 
 const buyMarket = (candle) => {
-    console.log('Buying');
     return new Promise((resolve, reject) => {
         let amount = amountToTrade(usdBalance, 'buy');
+        console.log('Buying', amount);
 
         myBitstamp.buyMarket(market, amount, (err, res) => {
             if (err || res.status == 'error') {
@@ -112,10 +111,10 @@ const buyMarket = (candle) => {
 };
 
 const sellMarket = (candle) => {
-    console.log('Selling');
-    let amount = amountToTrade(btcBalance, 'sell');
-
     return new Promise((resolve, reject) => {
+        let amount = amountToTrade(btcBalance, 'sell');
+        console.log('Selling', amount);
+
         myBitstamp.sellMarket(market, amount, (err, res) => {
             if (err || res.status == 'error') {
                 reject(err || res);
@@ -177,8 +176,19 @@ const trade = (candle) => {
 };
 
 const init = () => {
-    getBalance(() => {
-        getOpenedTrade();
+    ticker.events.on('data', (data) => {
+        try {
+            currentBtcPrice = parseFloat(data.price);
+            if (!tickerStreaming) {
+                getBalance(() => {
+                    getOpenedTrade();
+                });
+                tickerStreaming = true;
+            }
+        } catch (e) {
+            console.log('error from ticker');
+            console.log(data);
+        }
     });
 }
 
