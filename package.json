@@ -6,7 +6,8 @@
   "scripts": {
     "heroku-postbuild": "cd client && npm install && npm run build",
     "info": "node ./reports/info",
-    "start": "supervisor index"
+    "start": "supervisor index",
+    "analysis": "node analytics/optimize"
   },
   "keywords": [
     "stock",
