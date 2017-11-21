@@ -4,15 +4,17 @@ const optimizeHelper = require('../optimize/optimizeHelper');
 // Load initial configuration settings
 const initialSettings = {
     MA: {
-        short: 1,
-        long: 10,
+        short: 5,
+        long: 100,
         candle: 5 // in minutes
     }
 };
 
-// Create variable to hold trade data
+// Create variable to hold trade data and analysis
 let tradeJsonData = {};
+let analysis = [];
 const filePath = 'analytics/optimize/tradeData.json';
+const analysisFilePath = 'analytics/optimize/analysisData.json';
 
 // Method to unlink already saved trade data
 let unlinkTradeData = () => {
@@ -31,7 +33,7 @@ let getTradeData = () => {
     // Fetch new trade data from helper
     optimizeHelper.generateTradeData(data => {
         const tradeJSON = JSON.stringify(data, null, 2);
-        fs.writeFile('analytics/optimize/tradeData.json', tradeJSON, (err) => {
+        fs.writeFile(filePath, tradeJSON, (err) => {
             if (!err) {
                 console.log('Trade Data Generated');
                 process.nextTick(runAnalysis);
@@ -54,10 +56,34 @@ let loadTradeData = () => {
     })
 };
 
+// Method to output analysis to json file
+let outputAnalysis = () => {
+    const analysisJSON = JSON.stringify(analysis, null, 2);
+    fs.writeFileSync(analysisFilePath, analysisJSON);
+}
+
 // Method to run analysis using the loaded trade data
 let runAnalysis = () => {
-    // console.log('trade Data:::', tradeJsonData);
-    // We have the loaded trade data here, hence we proceed with the analysis
+    // Load initial settings
+    const short = initialSettings.MA.short;
+    const long = initialSettings.MA.long;
+    // Calculate the moving average for each candle stick
+    function runOnce () {
+        for (let i = short; i < long; i += 5) {
+            for (let j = long; j > short; j -= 5) {
+                let settings = {short: i, long: j}
+                let tradeObj = optimizeHelper.mapMovingAverages(tradeJsonData, settings);
+                let analysisresult = optimizeHelper.analyzeCrosses(tradeObj, settings);
+                analysis.push(analysisresult);
+            }
+        }
+    }
+
+    runOnce();
+
+    // Output analysis file
+    outputAnalysis();
+
     process.exit();
 };
 
@@ -68,6 +94,7 @@ let startAnalysis = () => {
     - Pull recent trade data: getTradeData()
     - Load recently pulled trade data: loadTradeData()
     - Run analysis using the loaded trade data: runAnalysis()
+    - Output analysis data to JSON
     **/
 
     let p1 = new Promise(resolve => {
