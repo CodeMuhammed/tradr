@@ -30,4 +30,4 @@ const run = () => {
     });
 }
 
-module.exports = { run };
+module.exports = { run: () => {} };
