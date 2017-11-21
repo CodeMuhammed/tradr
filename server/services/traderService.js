@@ -63,7 +63,8 @@ const getOpenedTrade = () => {
             console.log(`Unable to query trade DB`);
         } else {
             if (data) {
-                validateTrade(data);
+                tradeObj = data;
+                validateTrade();
             } else {
                 console.log('No opened trades');
                 // @TODO we may want to use this opportunity to trim the candles down
@@ -72,11 +73,8 @@ const getOpenedTrade = () => {
     })
 };
 
-const validateTrade = (trade) => {
-    if (tradeValidatorFn.isValid(trade.entryTimestamp)) {
-        console.log('Trade is still valid');
-        tradeObj = trade;
-    } else {
+const validateTrade = () => {
+    if (!tradeValidatorFn.isValid(tradeObj.entryTimestamp)) {
         console.log('Trade invalid closing position');
         sellMarket({})
             .then((stat) => {
@@ -122,7 +120,6 @@ const sellMarket = (candle) => {
             if (err || res.status == 'error') {
                 reject(err || res);
             } else {
-                console.log('hrere');
                 tradeObj.exitPrice = res.price || 0;
                 tradeObj.exitTimestamp = candle.timestamp || 0;
                 tradeObj.status = 'closed';
