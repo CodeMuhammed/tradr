@@ -6,7 +6,8 @@
   "scripts": {
     "heroku-postbuild": "cd client && npm install && npm run build",
     "info": "node ./reports/info",
-    "start": "supervisor index"    
+    "start": "supervisor index",
+    "analysis": "node analytics/optimize"
   },
   "keywords": [
     "stock",
@@ -22,7 +23,6 @@
     "dotenv": "^4.0.0",
     "email-check": "^1.1.0",
     "email-verify": "^0.1.1",
-    "eslint-config-standard": "^10.2.1",
     "express": "^4.15.3",
     "method-override": "^2.3.9",
     "mongoose": "^4.11.5",
