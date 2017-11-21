@@ -1,0 +1,9 @@
+{
+  "include": [
+    "server/**/*.js",
+    "client/**/*.js",
+    "reports/**/*.js"
+  ],
+  "cache": true,
+  "all": true
+}

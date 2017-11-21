@@ -4,9 +4,11 @@
   "description": "A financial trading tool",
   "main": "test.js",
   "scripts": {
+    "start": "supervisor index",
+    "crunch": "node server/crunch",
     "heroku-postbuild": "cd client && npm install && npm run build",
-    "info": "node ./reports/info",
-    "start": "supervisor index"    
+    "test": "nyc ./node_modules/.bin/_mocha",
+    "info": "node ./reports/info"
   },
   "keywords": [
     "stock",
@@ -36,11 +38,14 @@
     "validator": "^8.2.0"
   },
   "devDependencies": {
+    "chai": "^4.1.2",
     "eslint": "^4.3.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-standard": "^3.0.1"
+    "eslint-plugin-standard": "^3.0.1",
+    "mocha": "^4.0.1",
+    "nyc": "^11.3.0"
   }
 }
