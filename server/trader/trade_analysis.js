@@ -9,6 +9,11 @@ const trade = (candle) => {
     }
 }
 
+const resetBalance = () => {
+    USDBalance = 1000.00;
+    BTCBalance = 0;
+}
+
 const buyBTC = (candle) => {
     USDBalance = USDBalance - fees(USDBalance);
     let BTC = USDBalance / candle.close;
@@ -35,5 +40,6 @@ const fees = (amount) => {
 
 module.exports = {
     trade,
-    report
+    report,
+    resetBalance
 }
