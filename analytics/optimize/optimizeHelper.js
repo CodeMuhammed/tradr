@@ -2,18 +2,17 @@ require('dotenv').config();
 
 const mongoose = require('mongoose');
 const MA = require('../../server/indicators').MA;
-const MASettings = require('../../server/settings').MA;
 const helper = require('../../server/helper');
 const trader = require('../../server/trader/trade_analysis');
 
 const dbUrl = process.env.db_url_dev || process.env.db_url_prod;
 // connect to mongoose here
-const generateTradeData = (cb) => {
+const generateTradeData = (candle, cb) => {
     mongoose
         .connect(dbUrl, { useMongoClient: true })
         .then(() => {
             console.log('connected successfully to the database');
-            const CHUNKSIZE = MASettings.candle;
+            const CHUNKSIZE = candle;
 
             // let lastCandleTimeStamp = '';
             let timestamp = 1;
