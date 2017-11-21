@@ -21,8 +21,6 @@ module.exports = (settings) => {
                 candlesData = sampleCandles;
                 runCron();
                 callback();
-            } else {
-                console.log('No dataset collected so far');
             }
         });
     }
@@ -89,7 +87,7 @@ module.exports = (settings) => {
     function runCron () {
         console.log(`Waiting for ${CHUNKSIZE} mins`);
         setTimeout(() => {
-            helper.getCandles(lastCandleTimeStamp, CHUNKSIZE, (docs) => {
+            return helper.getCandles(lastCandleTimeStamp, CHUNKSIZE, (docs) => {
                 if (docs) {
                     console.log(`process ${docs.length} new candles`);
                     let sampleCandles = helper.groupCandles(docs, CHUNKSIZE);
@@ -98,11 +96,10 @@ module.exports = (settings) => {
                     mapMovingAverages(sampleCandles);
                     candlesData = candlesData.concat(sampleCandles);
                     checkForTrendReversal();
-                    return runCron();
-                } else {
-                    console.log('Not enough candles to recalculate');
                 }
-            })
+
+                return runCron();
+            });
         }, (CHUNKSIZE * 60 * 1000));
     }
 
